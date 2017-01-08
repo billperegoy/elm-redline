@@ -152,7 +152,7 @@ initModel =
 
 
 type Msg
-    = NoOp
+    = CloseAllPanels
     | ToggleHiked Int Int Int Bool
     | ToggleRegionVisibility Int
     | ToggleTrailVisibility Int
@@ -161,8 +161,12 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        NoOp ->
-            model ! []
+        CloseAllPanels ->
+            { model
+                | visibleRegion = Nothing
+                , visibleTrail = Nothing
+            }
+                ! []
 
         ToggleHiked regionId trailId segmentId value ->
             { model
@@ -284,17 +288,23 @@ grandTotals regions =
         percentHiked =
             (hikedTotal / total) * 100 |> round
     in
-        div [ class "alert alert-success" ]
-            [ h3 []
-                [ text
-                    ("Totals -- "
-                        ++ toString hikedTotal
-                        ++ " / "
-                        ++ toString total
-                        ++ "\n        ("
-                        ++ toString percentHiked
-                        ++ "%)"
-                    )
+        a
+            [ style [ ( "text-decoration", "none" ) ]
+            , href "#"
+            , onClickNoDefault CloseAllPanels
+            ]
+            [ div [ class "alert alert-success" ]
+                [ h3 []
+                    [ text
+                        ("Totals -- "
+                            ++ toString hikedTotal
+                            ++ " / "
+                            ++ toString total
+                            ++ "\n        ("
+                            ++ toString percentHiked
+                            ++ "%)"
+                        )
+                    ]
                 ]
             ]
 
