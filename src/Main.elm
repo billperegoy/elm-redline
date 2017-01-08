@@ -102,17 +102,42 @@ initModel =
             "region 2"
             [ Trail 3
                 2
-                "trail 1"
+                "trail 3"
                 [ Segment 7 3 fakeLocation fakeLocation 1.2 False
                 , Segment 8 3 fakeLocation fakeLocation 1.3 False
                 , Segment 9 3 fakeLocation fakeLocation 2.1 False
                 ]
             , Trail 4
                 2
-                "trail 2"
+                "trail 4"
                 [ Segment 10 4 fakeLocation fakeLocation 1.2 False
                 , Segment 11 4 fakeLocation fakeLocation 1.3 False
                 , Segment 12 4 fakeLocation fakeLocation 2.1 False
+                ]
+            ]
+        , Region 3
+            "region 3"
+            [ Trail 5
+                3
+                "trail 5"
+                [ Segment 13 5 fakeLocation fakeLocation 1.2 False
+                , Segment 14 5 fakeLocation fakeLocation 1.3 False
+                , Segment 15 5 fakeLocation fakeLocation 2.1 False
+                ]
+            , Trail 6
+                3
+                "trail 6"
+                [ Segment 16 6 fakeLocation fakeLocation 1.2 False
+                , Segment 17 6 fakeLocation fakeLocation 1.3 False
+                , Segment 18 6 fakeLocation fakeLocation 2.1 False
+                ]
+            , Trail 7
+                3
+                "trail 7"
+                [ Segment 19 7 fakeLocation fakeLocation 1.2 False
+                , Segment 20 7 fakeLocation fakeLocation 1.3 False
+                , Segment 21 7 fakeLocation fakeLocation 2.1 False
+                , Segment 22 7 fakeLocation fakeLocation 2.5 False
                 ]
             ]
         ]
@@ -330,7 +355,11 @@ singleRegionBody visibleRegion visibleTrail region =
 singleRegion : Maybe Int -> Maybe Int -> Region -> Html Msg
 singleRegion visibleRegion visibleTrail region =
     div []
-        [ a [ href "#", onClickNoDefault (ToggleRegionVisibility region.id) ]
+        [ a
+            [ style [ ( "text-decoration", "none" ) ]
+            , href "#"
+            , onClickNoDefault (ToggleRegionVisibility region.id)
+            ]
             [ div [ class "alert alert-info" ]
                 [ h4 [] [ text (region.name ++ " " ++ regionStats region) ]
                 ]
@@ -357,7 +386,11 @@ singleTrail : Trail -> Maybe Int -> Region -> Html Msg
 singleTrail trail visibleTrail region =
     div []
         [ div [ class "alert alert-warning" ]
-            [ a [ href "#", onClickNoDefault (ToggleTrailVisibility trail.id) ]
+            [ a
+                [ style [ ( "text-decoration", "none" ) ]
+                , href "#"
+                , onClickNoDefault (ToggleTrailVisibility trail.id)
+                ]
                 [ h5 [] [ text (totalString trail) ]
                 ]
             ]
