@@ -234,6 +234,11 @@ pageBody model =
         ]
 
 
+oneDecimalPlace : Float -> Float
+oneDecimalPlace num =
+    toFloat ((num * 10.0) |> round) / 10.0
+
+
 grandTotals : List Region -> Html Msg
 grandTotals regions =
     let
@@ -242,18 +247,20 @@ grandTotals regions =
                 |> List.map (\region -> regionTotals region)
                 |> List.map (\tup -> Tuple.second tup)
                 |> List.sum
+                |> oneDecimalPlace
 
         hikedTotal =
             regions
                 |> List.map (\region -> regionTotals region)
                 |> List.map (\tup -> Tuple.first tup)
                 |> List.sum
+                |> oneDecimalPlace
 
         percentHiked =
             (hikedTotal / total) * 100 |> round
     in
         div [ class "alert alert-success" ]
-            [ h2 []
+            [ h3 []
                 [ text
                     ("Totals -- "
                         ++ toString hikedTotal
@@ -275,12 +282,14 @@ regionTotals region =
                 |> List.map (\trail -> trailTotal trail)
                 |> List.map (\tup -> Tuple.second tup)
                 |> List.sum
+                |> oneDecimalPlace
 
         totalHiked =
             region.trails
                 |> List.map (\trail -> trailTotal trail)
                 |> List.map (\tup -> Tuple.first tup)
                 |> List.sum
+                |> oneDecimalPlace
     in
         ( totalHiked, total )
 
@@ -323,7 +332,7 @@ singleRegion visibleRegion visibleTrail region =
     div []
         [ a [ href "#", onClickNoDefault (ToggleRegionVisibility region.id) ]
             [ div [ class "alert alert-info" ]
-                [ h2 [] [ text (region.name ++ " " ++ regionStats region) ]
+                [ h4 [] [ text (region.name ++ " " ++ regionStats region) ]
                 ]
             ]
         , singleRegionBody visibleRegion visibleTrail region
@@ -338,7 +347,6 @@ singleTrailBody trail visibleTrail region =
             [ tbody []
                 ([ headerRow ]
                     ++ (List.map (\segment -> singleSegment segment region trail) trail.segments)
-                    ++ [ totalRow trail ]
                 )
             ]
     else
@@ -350,7 +358,7 @@ singleTrail trail visibleTrail region =
     div []
         [ div [ class "alert alert-warning" ]
             [ a [ href "#", onClickNoDefault (ToggleTrailVisibility trail.id) ]
-                [ h3 [] [ text trail.name ]
+                [ h5 [] [ text (totalString trail) ]
                 ]
             ]
         , singleTrailBody trail visibleTrail region
@@ -371,16 +379,22 @@ trailTotal : Trail -> ( Float, Float )
 trailTotal trail =
     let
         totalLength =
-            List.map .length trail.segments |> List.sum
+            List.map .length trail.segments
+                |> List.sum
+                |> oneDecimalPlace
 
         hikedLength =
-            trail.segments |> List.filter (\segment -> segment.hiked) |> List.map .length |> List.sum
+            trail.segments
+                |> List.filter (\segment -> segment.hiked)
+                |> List.map .length
+                |> List.sum
+                |> oneDecimalPlace
     in
         ( hikedLength, totalLength )
 
 
-totalRow : Trail -> Html Msg
-totalRow trail =
+totalString : Trail -> String
+totalString trail =
     let
         total =
             trailTotal trail
@@ -394,19 +408,15 @@ totalRow trail =
         percentHiked =
             (hikedLength / totalLength) * 100 |> round
     in
-        tr []
-            [ td [ colspan 3 ] [ text "total" ]
-            , td []
-                [ text
-                    ((hikedLength |> toString)
-                        ++ " / "
-                        ++ (totalLength |> toString)
-                        ++ " ("
-                        ++ (percentHiked |> toString)
-                        ++ "%)"
-                    )
-                ]
-            ]
+        (trail.name
+            ++ " -- "
+            ++ (hikedLength |> toString)
+            ++ " / "
+            ++ (totalLength |> toString)
+            ++ " ("
+            ++ (percentHiked |> toString)
+            ++ "%)"
+        )
 
 
 singleSegment : Segment -> Region -> Trail -> Html Msg
